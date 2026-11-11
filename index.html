@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tobz Party</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+html,body{margin:0;height:100%;overflow:hidden;font-family:"Trebuchet MS",Verdana,sans-serif;color:#fff;user-select:none}
+body{display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 30%,#3a1680,#0b0620 70%)}
+#wrap{position:relative;width:min(100vw,177.78vh);height:min(56.25vw,100vh);overflow:hidden;box-shadow:0 0 60px #7b2cffaa;border-radius:10px;background:#120a2a;font-size:16px}
+canvas{position:absolute;left:0;top:0;width:100%;height:100%}
+#ui{position:absolute;inset:0;pointer-events:none}
+.scr{position:absolute;inset:0;display:none;align-items:center;justify-content:center;gap:2.5em;pointer-events:auto;
+ background:linear-gradient(#ffffff0d 1px,transparent 1px) 0 0/2.5em 2.5em,linear-gradient(90deg,#ffffff0d 1px,transparent 1px) 0 0/2.5em 2.5em,linear-gradient(160deg,#2a0e63,#120a2a 55%,#3b0a4d);animation:slide 6s linear infinite}
+@keyframes slide{to{background-position:2.5em 2.5em,2.5em 2.5em,0 0}}
+.scr.on{display:flex}
+.scr.v{flex-direction:column;gap:.6em}
+.col{display:flex;flex-direction:column;align-items:center;gap:.7em}
+.row{display:flex;gap:.6em;align-items:center}
+.logo{margin:0;font-size:5em;line-height:.9;text-align:center;font-weight:900;letter-spacing:.04em;transform:rotate(-4deg)}
+.logo span{display:block;color:#ffe13b;text-shadow:.05em .05em 0 #ff3b9a,.1em .1em 0 #2ec5ff,0 0 .5em #ff3b9a}
+.logo span+span{color:#2ec5ff;text-shadow:.05em .05em 0 #ff3b9a,.1em .1em 0 #ffe13b,0 0 .5em #2ec5ff}
+.tag{color:#9fe8ff;font-size:1.05em;margin:.6em 0 .2em}
+h2{margin:0;font-size:2.4em;color:#ffe13b;text-shadow:.06em .06em 0 #ff3b9a,0 0 .5em #ff3b9a;letter-spacing:.05em}
+.lbl{font-size:.8em;color:#ff7ad9;letter-spacing:.2em}
+input{font:inherit;font-weight:900;font-size:1.3em;text-align:center;color:#fff;background:#0b0620;border:.15em solid #2ec5ff;border-radius:.6em;padding:.3em .5em;width:9em;outline:none;box-shadow:0 0 .8em #2ec5ff66;user-select:text}
+#code{width:4.5em;text-transform:uppercase}
+button{font:inherit;font-weight:900;color:#fff;background:linear-gradient(#7b2cff,#4a12b8);border:.12em solid #c9a6ff;border-radius:.7em;padding:.45em 1em;cursor:pointer;font-size:1.05em;box-shadow:0 .25em 0 #2a0a70;transition:transform .08s}
+button:hover{transform:translateY(-.1em);filter:brightness(1.2)}
+button:active{transform:translateY(.15em);box-shadow:none}
+button.big{font-size:1.7em;background:linear-gradient(#ff3b9a,#c2126b);border-color:#ffc3e6;box-shadow:0 .25em 0 #7a0a44,0 0 1em #ff3b9a88;padding:.4em 1.4em}
+button.sm{font-size:.9em}
+.panel{background:#0b062099;border:.15em solid #7b2cff;border-radius:1em;padding:1em 1.4em;box-shadow:0 0 1.5em #7b2cff66}
+#prev{position:static;width:14em;height:14em}
+.crow{display:flex;align-items:center;gap:.5em;margin:.15em 0}
+.crow .cl{width:4.6em;color:#ff7ad9;font-weight:900;font-size:.9em;text-align:right}
+.crow .cv{width:7.5em;text-align:center;font-weight:900}
+.crow button{padding:.15em .6em;font-size:.95em}
+#status,#lstatus{min-height:1.3em;color:#ffe13b;font-weight:900}
+#room{font-size:1.5em;font-weight:900;color:#52e36b;letter-spacing:.1em}
+#lobcv{position:static;width:44em;height:12.65em}
+.orow{display:flex;align-items:center;gap:.8em;margin:.25em 0}
+.orow>span{width:5em;text-align:right;color:#ff7ad9;font-weight:900;letter-spacing:.1em}
+.seg{display:flex;gap:.3em}
+.seg button{background:#1b0f3d;border-color:#5b3db0;box-shadow:none;font-size:.95em;padding:.3em .8em}
+.seg button.sel{background:linear-gradient(#2ec5ff,#1277c2);border-color:#c8f1ff}
+.dis .seg button{cursor:default;opacity:.75}
+#grid{display:grid;grid-template-columns:repeat(5,11.3em);grid-auto-rows:8.6em;gap:.55em;max-height:27em;overflow-y:auto;padding:.3em .5em .5em .3em;flex:none}
+#grid .card{position:relative;padding:0;overflow:hidden;display:block;font-size:1em;border-radius:.6em;background:#1b0f3d;box-shadow:0 .2em 0 #2a0a70;height:8.6em}
+#grid .card img{width:100%;height:6.3em;display:block;object-fit:cover;background:linear-gradient(135deg,#2a0e63,#7b2cff)}
+#grid .card .nm{display:block;font-size:.78em;line-height:2.6em;height:2.6em;white-space:nowrap;background:linear-gradient(#7b2cff,#4a12b8)}
+#grid .card.d3{border-color:#ffd0a6}
+#grid .card.d3 .nm{background:linear-gradient(#ff8c2b,#c2410c)}
+#grid .card .tg{position:absolute;left:.35em;top:.35em;font-size:.65em;background:#000b;border-radius:.4em;padding:.1em .45em}
+.hint{font-size:.8em;color:#c9b8ff}
+#bMusic{position:absolute;right:.6em;bottom:.6em;font-size:.7em;padding:.3em .7em;pointer-events:auto;opacity:.75;box-shadow:none}
+</style>
+</head>
+<body>
+<div id="wrap">
+ <canvas id="gl" width="1280" height="720"></canvas>
+ <canvas id="cv" width="960" height="540"></canvas>
+ <div id="ui">
+  <div class="scr on" id="s-title">
+   <div class="col">
+    <h1 class="logo"><span>TOBZ</span><span>PARTY</span></h1>
+    <div class="tag">50 mini games · solo or teams · play online</div>
+    <span class="lbl">YOUR NAME</span>
+    <input id="name" maxlength="12" spellcheck="false">
+    <button class="big" id="bPlay">▶ PLAY</button>
+    <div class="row"><input id="code" maxlength="4" placeholder="CODE" spellcheck="false"><button id="bJoin">JOIN ROOM</button></div>
+    <div id="status"></div>
+   </div>
+   <div class="col panel">
+    <canvas id="prev" width="300" height="300"></canvas>
+    <div id="cust"></div>
+    <button class="sm" id="bRand">🎲 Random look</button>
+   </div>
+  </div>
+  <div class="scr v" id="s-lobby">
+   <h2>PARTY LOBBY</h2>
+   <div id="room"></div>
+   <canvas id="lobcv" width="800" height="230"></canvas>
+   <div id="opts">
+    <div class="orow"><span>MODE</span><div class="seg" data-k="mode"><button data-v="ffa">Solo · everyone for themselves</button><button data-v="teams">Teams · 2 vs 2</button></div></div>
+    <div class="orow"><span>ROUNDS</span><div class="seg" data-k="rounds"><button data-v="5">5</button><button data-v="10">10</button><button data-v="15">15</button><button data-v="20">20</button><button data-v="50">All 50</button></div></div>
+    <div class="orow"><span>GAMES</span><div class="seg" data-k="filter"><button data-v="all">2D + 3D</button><button data-v="2d">2D only</button><button data-v="3d">3D only</button></div></div>
+   </div>
+   <div class="row"><button id="bBack">◀ Leave</button><button id="bOnline">🌐 Open online room</button><button id="bPick">🎮 Pick a mini game</button><button class="big" id="bStart">START PARTY</button></div>
+   <div id="lstatus"></div>
+   <div class="hint">Move: WASD / Arrows · Action: Space · Second action: Shift · Esc: back to lobby</div>
+  </div>
+  <div class="scr v" id="s-pick">
+   <h2>PICK A MINI GAME</h2>
+   <div id="grid"></div>
+   <button id="bPickBack">◀ Back</button>
+  </div>
+ <button id="bMusic" title="Music on/off (M)">🔊 Music</button>
+ </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="js/core.js"></script>
+<script src="js/music.js"></script>
+<script src="js/chars.js"></script>
+<script src="js/g3.js"></script>
+<script src="js/games2d.js"></script>
+<script src="js/games3d_a.js"></script>
+<script src="js/games3d_b.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
